@@ -21,9 +21,9 @@ namespace YourProjectNamespace.Controllers
         // GET: Category
         public async Task<IActionResult> Index()
         {
-              return _context.Categories != null ? 
-                          View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
+            return _context.Categories != null ?
+                        View(await _context.Categories.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
         }
 
         // GET: Category/Details/5
@@ -149,14 +149,14 @@ namespace YourProjectNamespace.Controllers
             {
                 _context.Categories.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.CategoryId == id)).GetValueOrDefault();
+            return (_context.Categories?.Any(e => e.CategoryId == id)).GetValueOrDefault();
         }
     }
 }
