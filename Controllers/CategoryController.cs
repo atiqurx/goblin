@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using goblin.Models;
 
-namespace YourProjectNamespace.Controllers
+namespace goblin.Controllers
 {
     public class CategoryController : Controller
     {
