@@ -7,10 +7,10 @@ namespace goblin.Models
     {
         [Key]
         public int TransactionId { get; set; }
-
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a category.")]
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
-
+        [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0.")]
         public string Amount { get; set; } = "";
 
         [Column(TypeName = "nvarchar(75)")]
