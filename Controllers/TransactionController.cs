@@ -47,8 +47,8 @@ namespace goblin.Controllers
         // GET: Transaction/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            return View();
+            PopulateCategories();
+            return View(new Transaction());
         }
 
         // POST: Transaction/Create
@@ -154,14 +154,23 @@ namespace goblin.Controllers
             {
                 _context.Transactions.Remove(transaction);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TransactionExists(int id)
         {
-          return (_context.Transactions?.Any(e => e.TransactionId == id)).GetValueOrDefault();
+            return (_context.Transactions?.Any(e => e.TransactionId == id)).GetValueOrDefault();
+        }
+
+        [NonAction]
+        public void PopulateCategories()
+        {
+            var CategoryCollection = _context.Categories.ToList();
+            Category DefaultCategory = new Category() { CategoryId = 0, Title = "Select a Category" };
+            CategoryCollection.Insert(0, DefaultCategory);
+            ViewBag.Categories = CategoryCollection;
         }
     }
 }
