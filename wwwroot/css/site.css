@@ -290,3 +290,10 @@ body {
 #menu .e-menu-item.e-separator:not(:first-child) {
   margin-top: 35px;
 }
+
+/* Logo */
+.logo-wrapper img {
+  width: 8rem;
+  margin: auto;
+  margin-bottom: 1rem;
+}
