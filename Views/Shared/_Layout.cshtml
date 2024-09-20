@@ -22,6 +22,7 @@
 
     <partial name="_SideBar" />
 
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -44,37 +45,36 @@
             </div>
         </nav>
     </header>
-
     <div class="main-content">
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <main role="main" class="pb-3">
-                        <div class="row">
-                            <div class="col-md-7">
-                                <div class="d-flex flex-column mb-5">
-                                    <div class="d-flex mb-1">
-                                        <div class="flex-grow-1">
-                                            <h3 class="fw-bold">@ViewData["PageTitle"]</h3>
-                                        </div>
-                                        <div>
-                                            @if (ViewData["PageActionText"] != null)
-                                            {
-                                                <a class="btn btn-primary"
-                                                    href="@ViewData["PageActionUrl"]">@ViewData["PageActionText"]</a>
-                                            }
-                                        </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <main role="main" class="pb-3">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="d-flex flex-column mb-5">
+                                <div class="d-flex mb-1">
+                                    <div class="flex-grow-1">
+                                        <h3 class="fw-bold">@ViewData["PageTitle"]</h3>
                                     </div>
-                                    <ejs-breadcrumb id="breadcrumb"></ejs-breadcrumb>
+                                    <div>
+                                        @if (ViewData["PageActionText"] != null)
+                                        {
+                                            <a class="btn btn-primary"
+                                                href="@ViewData["PageActionUrl"]">@ViewData["PageActionText"]</a>
+                                        }
+                                    </div>
                                 </div>
+                                <ejs-breadcrumb id="breadcrumb"></ejs-breadcrumb>
                             </div>
                         </div>
-                        @RenderBody()
-                    </main>
-                </div>
+                    </div>
+                    @RenderBody()
+                </main>
             </div>
-
         </div>
+
+    </div>
     </div>
 
     @* <footer class="border-top footer text-muted">
