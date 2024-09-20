@@ -17,5 +17,23 @@ namespace goblin.Models
         public string Note { get; set; } = "";
 
         public DateTime Date { get; set; } = DateTime.Now;
+
+        [NotMapped]
+        public string? CategoryTitleWithIcon { get { return Category == null ? "" : Category.Icon + "  " + Category.Title; } }
+
+        [NotMapped]
+        public string? FormattedAmount
+        {
+            get
+            {
+                if (decimal.TryParse(Amount, out var parsedAmount))
+                {
+                    return ((Category == null || Category.Type == "Expense") ? "- " : "+ ") + parsedAmount.ToString("C");
+                }
+                return Amount;
+            }
+        }
+
+
     }
 }
