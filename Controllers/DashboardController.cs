@@ -26,23 +26,22 @@ namespace goblin.Controllers
                 .Where(y => y.Date >= StartDate && y.Date <= EndDate)
                 .ToListAsync();
 
-            //Total Income
-            int TotalIncome = SelectedTransactions
+            // Total Income
+            decimal TotalIncome = SelectedTransactions
                 .Where(i => i.Category.Type == "Income")
                 .Sum(j => j.Amount);
             ViewBag.TotalIncome = TotalIncome.ToString("C0");
 
-            //Total Expense
-            int TotalExpense = SelectedTransactions
+            // Total Expense
+            decimal TotalExpense = SelectedTransactions
                 .Where(i => i.Category.Type == "Expense")
                 .Sum(j => j.Amount);
             ViewBag.TotalExpense = TotalExpense.ToString("C0");
 
-            //Balance
-            int Balance = TotalIncome - TotalExpense;
-            CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
-            culture.NumberFormat.CurrencyNegativePattern = 1;
-            ViewBag.Balance = String.Format(culture, "{0:C0}", Balance);
+            // Balance
+            decimal Balance = TotalIncome - TotalExpense;
+            ViewBag.Balance = Balance.ToString("C0");
+
 
             //Doughnut Chart - Expense By Category
             ViewBag.DoughnutChartData = SelectedTransactions
@@ -56,8 +55,6 @@ namespace goblin.Controllers
                 })
                 .OrderByDescending(l => l.amount)
                 .ToList();
-
-            //Spline Chart - Income vs Expense
 
             //Income
             List<SplineChartData> IncomeSummary = SelectedTransactions
@@ -81,22 +78,26 @@ namespace goblin.Controllers
                 })
                 .ToList();
 
+
+
+
             //Combine Income & Expense
             string[] Last7Days = Enumerable.Range(0, 7)
                 .Select(i => StartDate.AddDays(i).ToString("dd-MMM"))
                 .ToArray();
 
             ViewBag.SplineChartData = from day in Last7Days
-                                      join income in IncomeSummary on day equals income.day into dayIncomeJoined
-                                      from income in dayIncomeJoined.DefaultIfEmpty()
-                                      join expense in ExpenseSummary on day equals expense.day into expenseJoined
-                                      from expense in expenseJoined.DefaultIfEmpty()
-                                      select new
-                                      {
-                                          day = day,
-                                          income = income == null ? 0 : income.income,
-                                          expense = expense == null ? 0 : expense.expense,
-                                      };
+                          join income in IncomeSummary on day equals income.day into dayIncomeJoined
+                          from income in dayIncomeJoined.DefaultIfEmpty()
+                          join expense in ExpenseSummary on day equals expense.day into expenseJoined
+                          from expense in expenseJoined.DefaultIfEmpty()
+                          select new
+                          {
+                              day = day,
+                              income = income?.income.ToString("C") ?? "0",  // Format as currency
+                              expense = expense?.expense.ToString("C") ?? "0"  // Format as currency
+                          };
+
             //Recent Transactions
             ViewBag.RecentTransactions = await _context.Transactions
                 .Include(i => i.Category)
@@ -111,9 +112,11 @@ namespace goblin.Controllers
 
     public class SplineChartData
     {
-        public string day;
-        public int income;
-        public int expense;
-
+        public string day { get; set; }  // Use properties with getters and setters
+        public decimal income { get; set; }  // Change to decimal
+        public decimal expense { get; set; }  // Change to decimal
     }
+
+
+
 }
