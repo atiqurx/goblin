@@ -25,33 +25,118 @@ namespace goblin.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Transaction/AddOrEdit
-        public IActionResult AddOrEdit(int id = 0)
+        // GET: Transaction/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            PopulateCategories();
-            if (id == 0)
-                return View(new Transaction());
-            else
-                return View(_context.Transactions.Find(id));
+            if (id == null || _context.Transactions == null)
+            {
+                return NotFound();
+            }
+
+            var transaction = await _context.Transactions
+                .Include(t => t.Category)
+                .FirstOrDefaultAsync(m => m.TransactionId == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            return View(transaction);
         }
 
-        // POST: Transaction/AddOrEdit
+        // GET: Transaction/Create
+        public IActionResult Create()
+        {
+            PopulateCategories();
+            return View(new Transaction());
+        }
+
+        // POST: Transaction/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddOrEdit([Bind("TransactionId,CategoryId,Amount,Note,Date")] Transaction transaction)
+        public async Task<IActionResult> Create([Bind("TransactionId,CategoryId,Amount,Note,Date")] Transaction transaction)
         {
             if (ModelState.IsValid)
             {
-                if (transaction.TransactionId == 0)
-                    _context.Add(transaction);
-                else
-                    _context.Update(transaction);
+                _context.Add(transaction);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            PopulateCategories();
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", transaction.CategoryId);
+            return View(transaction);
+        }
+
+        // GET: Transaction/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.Transactions == null)
+            {
+                return NotFound();
+            }
+
+            var transaction = await _context.Transactions.FindAsync(id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", transaction.CategoryId);
+            return View(transaction);
+        }
+
+        // POST: Transaction/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("TransactionId,CategoryId,Amount,Note,Date")] Transaction transaction)
+        {
+            if (id != transaction.TransactionId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(transaction);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TransactionExists(transaction.TransactionId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", transaction.CategoryId);
+            return View(transaction);
+        }
+
+        // GET: Transaction/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null || _context.Transactions == null)
+            {
+                return NotFound();
+            }
+
+            var transaction = await _context.Transactions
+                .Include(t => t.Category)
+                .FirstOrDefaultAsync(m => m.TransactionId == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
             return View(transaction);
         }
 
@@ -74,12 +159,16 @@ namespace goblin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        private bool TransactionExists(int id)
+        {
+            return (_context.Transactions?.Any(e => e.TransactionId == id)).GetValueOrDefault();
+        }
 
         [NonAction]
         public void PopulateCategories()
         {
             var CategoryCollection = _context.Categories.ToList();
-            Category DefaultCategory = new Category() { CategoryId = 0, Title = "Choose a Category" };
+            Category DefaultCategory = new Category() { CategoryId = 0, Title = "Select a Category" };
             CategoryCollection.Insert(0, DefaultCategory);
             ViewBag.Categories = CategoryCollection;
         }
